@@ -31,13 +31,29 @@ def get_ctg(function)
     ctg = decomp_results.getCCodeMarkup()
     return ctg
 
-def get_matching_tokens(ctg, pattern, ignore=None)
+def get_matching_tokens(ctg, pattern):
     ret = []
-    for ct in ctg:
-        if ct == ignore:
-            continue
+    for ct in ctg.tokenIterator(True):
         if pattern in ct.toString():
             ret.append(ct)
+    
+    return ret
+
+def get_matching_token_group(ctg, start, end):
+    ret = []
+
+    starts = []
+    for ct in ctg.tokenIterator(True):
+        if start in ct.toString():
+            starts.append(ct)
+    
+    for start in starts:
+        substr = ''
+        for ct in start.iterator(True):
+            substr += str(ct)
+            if end in substr:
+                ret.append(start.getMinAddress(), substr)
+                break
     
     return ret
 
